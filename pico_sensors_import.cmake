@@ -1,6 +1,7 @@
 # This is a copy of <PICO_SENSORS_PATH>/external/pico_sensors_import.cmake
+# based on the one in pico-extras
 
-# This can be dropped into an external project to help locate pico-extras
+# This can be dropped into an external project to help locate pico-sensors
 # It should be include()ed prior to project()
 
 if (DEFINED ENV{PICO_SENSORS_PATH} AND (NOT PICO_SENSORS_PATH))
@@ -31,18 +32,18 @@ if (NOT PICO_SENSORS_PATH)
                 GIT_TAG master
         )
         if (NOT pico_sensors)
-            message("Downloading Raspberry Pi Pico Extras")
+            message("Downloading Raspberry Pi Pico Sensors")
             FetchContent_Populate(pico_sensors)
             set(PICO_SENSORS_PATH ${pico_sensors_SOURCE_DIR})
         endif ()
         set(FETCHCONTENT_BASE_DIR ${FETCHCONTENT_BASE_DIR_SAVE})
     else ()
-        if (PICO_SDK_PATH AND EXISTS "${PICO_SDK_PATH}/../pico-extras")
-            set(PICO_SENSORS_PATH ${PICO_SDK_PATH}/../pico-extras)
+        if (PICO_SDK_PATH AND EXISTS "${PICO_SDK_PATH}/../pico-sensors")
+            set(PICO_SENSORS_PATH ${PICO_SDK_PATH}/../pico-sensors)
             message("Defaulting PICO_SENSORS_PATH as sibling of PICO_SDK_PATH: ${PICO_SENSORS_PATH}")
         else()
             message(FATAL_ERROR
-                    "PICO EXTRAS location was not specified. Please set PICO_SENSORS_PATH or set PICO_SENSORS_FETCH_FROM_GIT to on to fetch from git."
+                    "PICO SSENSORS location was not specified. Please set PICO_SENSORS_PATH or set PICO_SENSORS_FETCH_FROM_GIT to on to fetch from git."
                     )
         endif()
     endif ()
