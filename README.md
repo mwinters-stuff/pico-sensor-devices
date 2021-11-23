@@ -9,6 +9,7 @@ Arduino Code for various Sensors modified to work in the pico-c-sdk
 * PCF8563, RTC
 * VEML6070, UV (Ultra Violet)
 
+Feel free to issue PR's with additional devices.
 
 ## Wire
 All the sensors apart from the DHT22 are I2C sensors, these to be compatible with the arduino sensor code, 
