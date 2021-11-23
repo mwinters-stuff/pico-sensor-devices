@@ -1,0 +1,2 @@
+pico_simple_sensor_target(Wire)
+target_link_libraries(sensor_Wire INTERFACE hardware_i2c)

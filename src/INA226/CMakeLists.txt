@@ -1,0 +1,2 @@
+pico_simple_sensor_target(INA226)
+target_link_libraries(sensor_INA226 INTERFACE sensor_Wire)

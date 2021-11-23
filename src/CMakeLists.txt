@@ -1,0 +1,7 @@
+# This CMakeLists.txt intended to be included from other projectgs
+pico_add_subdirectory(BH1750)
+pico_add_subdirectory(DHT22)
+pico_add_subdirectory(INA226)
+pico_add_subdirectory(PCF8563)
+pico_add_subdirectory(VEML6070)
+pico_add_subdirectory(Wire)

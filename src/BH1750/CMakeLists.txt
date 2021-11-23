@@ -1,0 +1,2 @@
+pico_simple_sensor_target(BH1750)
+target_link_libraries(sensor_BH1750 INTERFACE sensor_Wire)

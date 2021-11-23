@@ -1,0 +1,1 @@
+pico_simple_sensor_target(DHT22)

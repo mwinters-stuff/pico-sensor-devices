@@ -1,0 +1,2 @@
+pico_simple_sensor_target(PCF8563)
+target_link_libraries(sensor_PCF8563 INTERFACE sensor_Wire)

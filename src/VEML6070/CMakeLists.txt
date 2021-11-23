@@ -1,0 +1,2 @@
+pico_simple_sensor_target(VEML6070)
+target_link_libraries(sensor_VEML6070 INTERFACE sensor_Wire)
