@@ -1,0 +1,2 @@
+pico_simple_sensor_target(ADS1X15)
+target_link_libraries(sensor_ADS1X15 INTERFACE sensor_Wire)
