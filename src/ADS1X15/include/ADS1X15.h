@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ADS1X15_H
+#define ADS1X15_H
 //
 //    FILE: ADS1X15.H
 //  AUTHOR: Rob Tillaart
@@ -9,7 +10,7 @@
 //
 
 
-#include "Arduino.h"
+// #include "Arduino.h"
 #include "sensor/Wire.h"
 
 #define ADS1X15_LIB_VERSION               (F("0.3.8"))
@@ -37,7 +38,7 @@ public:
   void     reset();
 
 
-  bool    begin(i2c_inst_t* i2c,);
+  bool    begin(i2c_inst_t* i2c);
   bool     isConnected();
 
   //       GAIN
@@ -157,7 +158,7 @@ protected:
   uint16_t _readRegister(uint8_t address, uint8_t reg);
   int8_t   _err = ADS1X15_OK;
 
-  TwoWire*  _wire;
+  Wire  _wire;
   uint32_t  _clockSpeed = 0;
 };
 
@@ -169,21 +170,21 @@ protected:
 class ADS1013 : public ADS1X15
 {
 public:
-  ADS1013(uint8_t Address = ADS1015_ADDRESS, TwoWire *wire = &Wire);
+  ADS1013(uint8_t Address = ADS1015_ADDRESS);
 };
 
 
 class ADS1014 : public ADS1X15
 {
 public:
-  ADS1014(uint8_t Address = ADS1015_ADDRESS, TwoWire *wire = &Wire);
+  ADS1014(uint8_t Address = ADS1015_ADDRESS);
 };
 
 
 class ADS1015 : public ADS1X15
 {
 public:
-  ADS1015(uint8_t Address = ADS1015_ADDRESS, TwoWire *wire = &Wire);
+  ADS1015(uint8_t Address = ADS1015_ADDRESS);
   int16_t  readADC_Differential_0_3();
   int16_t  readADC_Differential_1_3();
   int16_t  readADC_Differential_2_3();
@@ -202,21 +203,21 @@ public:
 class ADS1113 : public ADS1X15
 {
 public:
-  ADS1113(uint8_t address = ADS1115_ADDRESS, TwoWire *wire = &Wire);
+  ADS1113(uint8_t address = ADS1115_ADDRESS);
 };
 
 
 class ADS1114 : public ADS1X15
 {
 public:
-  ADS1114(uint8_t address = ADS1115_ADDRESS, TwoWire *wire = &Wire);
+  ADS1114(uint8_t address = ADS1115_ADDRESS);
 };
 
 
 class ADS1115 : public ADS1X15
 {
 public:
-  ADS1115(uint8_t address = ADS1115_ADDRESS, TwoWire *wire = &Wire);
+  ADS1115(uint8_t address = ADS1115_ADDRESS);
   int16_t  readADC_Differential_0_3();
   int16_t  readADC_Differential_1_3();
   int16_t  readADC_Differential_2_3();
@@ -227,5 +228,6 @@ public:
   void     requestADC_Differential_2_3();
 };
 
+#endif
 
 // --- END OF FILE ---

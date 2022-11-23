@@ -7,7 +7,7 @@
 //     URL: https://github.com/RobTillaart/ADS1X15
 
 
-#include "ADS1X15.h"
+#include "sensor/ADS1X15.h"
 
 #define ADS1015_CONVERSION_DELAY    1
 #define ADS1115_CONVERSION_DELAY    8
@@ -141,7 +141,7 @@ void ADS1X15::reset()
 
 
 
-bool ADS1X15::begin(i2c_inst_t* i2c,)
+bool ADS1X15::begin(i2c_inst_t* i2c)
 {
   _wire.begin(i2c);
   if ((_address < 0x48) || (_address > 0x4B)) return false;
@@ -153,7 +153,7 @@ bool ADS1X15::begin(i2c_inst_t* i2c,)
 
 // bool ADS1X15::begin()
 // {
-//   _wire->begin();
+//   _wire.begin();
 //   if ((_address < 0x48) || (_address > 0x4B)) return false;
 //   if (! isConnected()) return false;
 //   return true;
@@ -175,8 +175,8 @@ bool ADS1X15::isReady()
 
 bool ADS1X15::isConnected()
 {
-  _wire->beginTransmission(_address);
-  return (_wire->endTransmission() == 0);
+  _wire.beginTransmission(_address);
+  return (_wire.endTransmission() == 0);
 }
 
 
@@ -357,7 +357,7 @@ int8_t ADS1X15::getError()
 void ADS1X15::setWireClock(uint32_t clockSpeed)
 {
   _clockSpeed = clockSpeed;
-  _wire->setClock(_clockSpeed);
+  // _wire.setClock(_clockSpeed);
 }
 
 
@@ -370,22 +370,7 @@ void ADS1X15::setWireClock(uint32_t clockSpeed)
 // TODO: get the real clock speed from the I2C interface if possible.
 uint32_t ADS1X15::getWireClock()
 {
-// UNO 328 and
-#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega168__)
-  uint32_t speed = F_CPU / ((TWBR * 2) + 16);
-  return speed;
-
-#elif defined(ESP32)
-  return (uint32_t) _wire->getClock();
-
-// #elif defined(ESP8266)
-// core_esp8266_si2c.cpp holds the data see => void Twi::setClock(
-// not supported.
-// return -1;
-
-#else  // best effort is remembering it
   return _clockSpeed;
-#endif
 }
 
 
@@ -398,11 +383,11 @@ int16_t ADS1X15::_readADC(uint16_t readmode)
   _requestADC(readmode);
   if (_mode == ADS1X15_MODE_SINGLE)
   {
-    while ( isBusy() ) yield();   // wait for conversion; yield for ESP.
+    while ( isBusy() );   // wait for conversion; yield for ESP.
   }
   else
   {
-    delay(_conversionDelay);      // TODO needed in continuous mode?
+    sleep_ms(_conversionDelay);      // TODO needed in continuous mode?
   }
   return getValue();
 }
@@ -429,25 +414,25 @@ void ADS1X15::_requestADC(uint16_t readmode)
 
 bool ADS1X15::_writeRegister(uint8_t address, uint8_t reg, uint16_t value)
 {
-  _wire->beginTransmission(address);
-  _wire->write((uint8_t)reg);
-  _wire->write((uint8_t)(value >> 8));
-  _wire->write((uint8_t)(value & 0xFF));
-  return (_wire->endTransmission() == 0);
+  _wire.beginTransmission(address);
+  _wire.write((uint8_t)reg);
+  _wire.write((uint8_t)(value >> 8));
+  _wire.write((uint8_t)(value & 0xFF));
+  return (_wire.endTransmission() == 0);
 }
 
 
 uint16_t ADS1X15::_readRegister(uint8_t address, uint8_t reg)
 {
-  _wire->beginTransmission(address);
-  _wire->write(reg);
-  _wire->endTransmission();
+  _wire.beginTransmission(address);
+  _wire.write(reg);
+  _wire.endTransmission();
 
-  int rv = _wire->requestFrom((int) address, (int) 2);
+  int rv = _wire.requestFrom((int) address, (int) 2);
   if (rv == 2)
   {
-    uint16_t value = _wire->read() << 8;
-    value += _wire->read();
+    uint16_t value = _wire.read() << 8;
+    value += _wire.read();
     return value;
   }
   return 0x0000;
@@ -458,10 +443,10 @@ uint16_t ADS1X15::_readRegister(uint8_t address, uint8_t reg)
 //
 // ADS1013
 //
-ADS1013::ADS1013(uint8_t address, TwoWire *wire)
+ADS1013::ADS1013(uint8_t address)
 {
   _address = address;
-  _wire = wire;
+  
   _config = ADS_CONF_NOCOMP | ADS_CONF_NOGAIN | ADS_CONF_RES_12 | ADS_CONF_CHAN_1;
   _conversionDelay = ADS1015_CONVERSION_DELAY;
   _bitShift = 4;
@@ -473,10 +458,10 @@ ADS1013::ADS1013(uint8_t address, TwoWire *wire)
 //
 // ADS1014
 //
-ADS1014::ADS1014(uint8_t address, TwoWire *wire)
+ADS1014::ADS1014(uint8_t address)
 {
   _address = address;
-  _wire = wire;
+  
   _config = ADS_CONF_COMP | ADS_CONF_GAIN | ADS_CONF_RES_12 | ADS_CONF_CHAN_1;
   _conversionDelay = ADS1015_CONVERSION_DELAY;
   _bitShift = 4;
@@ -488,10 +473,9 @@ ADS1014::ADS1014(uint8_t address, TwoWire *wire)
 //
 // ADS1015
 //
-ADS1015::ADS1015(uint8_t address, TwoWire *wire)
+ADS1015::ADS1015(uint8_t address)
 {
   _address = address;
-  _wire = wire;
   _config = ADS_CONF_COMP | ADS_CONF_GAIN | ADS_CONF_RES_12 | ADS_CONF_CHAN_4;
   _conversionDelay = ADS1015_CONVERSION_DELAY;
   _bitShift = 4;
@@ -551,10 +535,10 @@ void ADS1015::requestADC_Differential_2_3()
 //
 // ADS1113
 //
-ADS1113::ADS1113(uint8_t address, TwoWire *wire)
+ADS1113::ADS1113(uint8_t address)
 {
   _address = address;
-  _wire = wire;
+  
   _config = ADS_CONF_NOCOMP | ADS_CONF_NOGAIN | ADS_CONF_RES_16 | ADS_CONF_CHAN_1;
   _conversionDelay = ADS1115_CONVERSION_DELAY;
   _bitShift = 0;
@@ -566,10 +550,10 @@ ADS1113::ADS1113(uint8_t address, TwoWire *wire)
 //
 // ADS1114
 //
-ADS1114::ADS1114(uint8_t address, TwoWire *wire)
+ADS1114::ADS1114(uint8_t address)
 {
   _address = address;
-  _wire = wire;
+  
   _config = ADS_CONF_COMP | ADS_CONF_GAIN | ADS_CONF_RES_16 | ADS_CONF_CHAN_1;
   _conversionDelay = ADS1115_CONVERSION_DELAY;
   _bitShift = 0;
@@ -581,10 +565,10 @@ ADS1114::ADS1114(uint8_t address, TwoWire *wire)
 //
 // ADS1115
 //
-ADS1115::ADS1115(uint8_t address, TwoWire *wire)
+ADS1115::ADS1115(uint8_t address)
 {
   _address = address;
-  _wire = wire;
+  
   _config = ADS_CONF_COMP | ADS_CONF_GAIN | ADS_CONF_RES_16 | ADS_CONF_CHAN_4;
   _conversionDelay = ADS1115_CONVERSION_DELAY;
   _bitShift = 0;
