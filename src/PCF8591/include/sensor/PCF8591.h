@@ -8,7 +8,7 @@
 //     URL: https://github.com/RobTillaart/PCF8591
 
 
-#include "sensors/Wire.h"
+#include "sensor/Wire.h"
 
 
 #define PCF8591_LIB_VERSION             (F("0.1.3"))

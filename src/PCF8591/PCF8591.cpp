@@ -7,7 +7,7 @@
 //     URL: https://github.com/RobTillaart/PCF8591
 
 
-#include "sensors/PCF8591.h"
+#include "sensor/PCF8591.h"
 
 
 //  INTERNAL USE ONLY
@@ -15,7 +15,7 @@
 #define PCF8591_INCR_FLAG               0x04
 
 
-PCF8591::PCF8591(const uint8_t address, TwoWire *wire)
+PCF8591::PCF8591(const uint8_t address)
 {
   if ((address < 0x48) || (address > 0x4F))
   {
@@ -23,7 +23,6 @@ PCF8591::PCF8591(const uint8_t address, TwoWire *wire)
     return;
   }
   _address = address;
-  _wire    = wire;
   _control = 0;
   _dac     = 0;
   for (uint8_t i = 0; i < 4; i++)
@@ -48,7 +47,7 @@ bool PCF8591::isConnected()
 {
   _wire.beginTransmission(_address);
   _error = _wire.endTransmission();  // default == 0 == PCF8591_OK
-  return( _error == PCF8591_OK);
+  return( _error != 0xff);
 }
 
 //////////////////////////////////////////////////////////
@@ -112,7 +111,7 @@ uint8_t PCF8591::analogRead(uint8_t channel, uint8_t mode)
   _wire.beginTransmission(_address);
   _wire.write(_control);
   _error = _wire.endTransmission();  // default == 0 == PCF8591_OK
-  if (_error != 0) return PCF8591_I2C_ERROR;
+  if (_error == 0xff) return PCF8591_I2C_ERROR;
 
   if (_wire.requestFrom(_address, (uint8_t)2) != 2)
   {
@@ -135,7 +134,7 @@ uint8_t PCF8591::analogRead4()
   _wire.beginTransmission(_address);
   _wire.write(_control);
   _error = _wire.endTransmission();  // default == 0 == PCF8591_OK
-  if (_error != 0)
+  if (_error == 0xff)
   {
     _error = PCF8591_I2C_ERROR;
     disableINCR();
@@ -193,7 +192,7 @@ bool PCF8591::analogWrite(uint8_t value)
   _wire.write(_control);
   _wire.write(value);
   _error = _wire.endTransmission();
-  if (_error != 0)
+  if (_error == 0xff)
   {
     _error = PCF8591_I2C_ERROR;
     return false;
