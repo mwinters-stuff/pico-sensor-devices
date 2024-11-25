@@ -1,0 +1,2 @@
+pico_simple_sensor_target(BMP085)
+target_link_libraries(sensor_BMP085 INTERFACE sensor_Wire)

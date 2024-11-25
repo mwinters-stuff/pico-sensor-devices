@@ -8,6 +8,7 @@ Arduino Code for various Sensors modified to work in the pico-c-sdk
 * INA226, Voltage and Current
 * PCF8563, RTC
 * VEML6070, UV (Ultra Violet)
+* BMP085/BMP180, Temperature and Atmospheric Pressure
 
 Feel free to issue PR's with additional devices.
 
@@ -37,6 +38,7 @@ To use the library, follow these steps, it will be similar to that you would hav
       sensor_PCF8563
       sensor_VEML6070
       sensor_BH1750
+      sensor_bmp085
     )
    ```
 4. In your code, include the header you need, if you didnt target the sensor then the header wont be found.
@@ -46,6 +48,7 @@ To use the library, follow these steps, it will be similar to that you would hav
    #include "sensor/PCF8563.h"
    #include "sensor/VEML6070.h"
    #include "sensor/DHT22.h"
+   #include "sensor/BMP085.h"
    ```
 5. Follow the instructions for each sensor.
 
@@ -228,6 +231,40 @@ int main(void){
     printf("\n\Triggered At: %s %s UTC\n", rtc.formatDate(RTCC_DATE_WORLD), rtc.formatTime());
     uart_default_tx_wait_blocking();
     rtc.resetTimer();
+  }
+}
+```
+## BMP085/BMP180
+The following code will setup the BMP085 or BMP180 and read from it
+```CPP
+#include <sstream>
+#include <stdio.h>
+
+#include "sensor/BMP085.h"
+
+BMP085 bmp085;
+
+int main(void){
+  stdio_init_all();
+
+  i2c_init(i2c_default, 100 * 1000);
+  gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
+  gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
+  gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
+  gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
+
+  bmp085.begin(i2c_default);
+
+  while(true){
+    std::stringbuffer sbuff;
+  
+    float temperature = bmp085.readTemparature();
+    float pressure = bmp085.readPressure();
+    sbuff << "Temperature: " << temperature << "\n"
+          << "Pressure: " << pressure << "\n";
+
+    printf(sbuff.str().c_str());
+    sleep(5000);
   }
 }
 ```
