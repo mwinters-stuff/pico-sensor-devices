@@ -72,7 +72,7 @@ if (NOT PICO_SDK_PATH)
             message("Downloading Raspberry Pi Pico SDK")
             # GIT_SUBMODULES_RECURSE was added in 3.17
             if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.17.0")
-                FetchContent_Populate(
+                FetchContent_MakeAvailable(
                         pico_sdk
                         QUIET
                         GIT_REPOSITORY https://github.com/raspberrypi/pico-sdk
@@ -84,7 +84,7 @@ if (NOT PICO_SDK_PATH)
                         SUBBUILD_DIR ${FETCHCONTENT_BASE_DIR}/pico_sdk-subbuild
                 )
             else ()
-                FetchContent_Populate(
+                FetchContent_MakeAvailable(
                         pico_sdk
                         QUIET
                         GIT_REPOSITORY https://github.com/raspberrypi/pico-sdk
