@@ -9,6 +9,8 @@ Arduino Code for various Sensors modified to work in the pico-c-sdk
 * PCF8563, RTC
 * VEML6070, UV (Ultra Violet)
 * BMP085/BMP180, Temperature and Atmospheric Pressure
+* PCF8591, 8-bit A/D and D/A converter
+* PCF8575, 16 port I/O Expander
 
 Feel free to issue PR's with additional devices.
 
@@ -39,6 +41,8 @@ To use the library, follow these steps, it will be similar to that you would hav
       sensor_VEML6070
       sensor_BH1750
       sensor_bmp085
+      sensor_PCF8591
+      sensor_PCF8575
     )
    ```
 4. In your code, include the header you need, if you didnt target the sensor then the header wont be found.
@@ -49,6 +53,8 @@ To use the library, follow these steps, it will be similar to that you would hav
    #include "sensor/VEML6070.h"
    #include "sensor/DHT22.h"
    #include "sensor/BMP085.h"
+   #include "sensor/PCF8591.h"
+   #include "sensor/PCF8575.h"
    ```
 5. Follow the instructions for each sensor.
 
@@ -267,4 +273,73 @@ int main(void){
     sleep(5000);
   }
 }
+```
+
+## PCF8575
+The following code writes to the PCF8575
+```CPP
+#include "hardware/i2c.h"
+#include "pico/stdlib.h"
+#include "sensor/PCF8575.h"
+#include <stdio.h>
+
+int main()
+{
+  stdio_init_all();
+
+  // I2C Initialisation. Using it at 400Khz.
+  i2c_init(i2c_default, 100 * 1000);
+  gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
+  gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
+  gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
+  gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
+
+  PCF8575 PCF(0x20);
+  PCF.begin(i2c_default);
+  // For more examples of I2C use see https://github.com/raspberrypi/pico-examples/tree/master/i2c
+
+  while (true)
+  {
+    PCF.write(0, 1);
+    for (int i = 0; i < 15; i++)
+    {
+      PCF.rotateLeft();
+      sleep_ms(100);
+    }
+
+    for (int i = 0; i < 15; i++)
+    {
+      PCF.rotateRight();
+      sleep_ms(100);
+    }
+
+    for (int i = 0; i < 15; i++)
+    {
+      PCF.rotateLeft(3);
+      sleep_ms(100);
+    }
+
+    for (int i = 0; i < 15; i++)
+    {
+      PCF.rotateRight(2);
+      sleep_ms(100);
+    }
+
+    for (uint16_t i = 0; i < 65535; i += 253)
+    {
+      PCF.toggleMask(i);
+      sleep_ms(100);
+    }
+
+    //  0010 0111  -> 0x27
+    //  1110 0100
+    PCF.write16(0x2755);
+    for (int i = 0; i < 255; i++)
+    {
+      PCF.reverse();
+      sleep_ms(100);
+    }
+  }
+}
+
 ```
