@@ -36,7 +36,7 @@ bool PCF8575::begin(i2c_inst_t* i2c, uint16_t value)
 bool PCF8575::isConnected()
 {
   _wire->beginTransmission(_address);
-  return ( _wire->endTransmission() == 0);
+  return ( _wire->endTransmission() != 0xff);
 }
 
 

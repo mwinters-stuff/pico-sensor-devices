@@ -23,7 +23,7 @@ uint8_t Wire::endTransmission(bool stopBit){
       uint8_t buf[1];
 
       int ret = i2c_read_blocking(i2c, _address, buf, 1, !stopBit);
-      return ret == PICO_ERROR_GENERIC ? 0xff : ret;
+      return ret <= PICO_ERROR_GENERIC ? 0xff : ret;
     }
 
 
