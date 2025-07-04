@@ -47,6 +47,15 @@ size_t Wire::write(uint8_t data){
 	return 1;
 }
 
+size_t Wire::write(const uint8_t* data, size_t size) {
+    if (usedTxBuffer + size > 256) {
+        size = 256 - usedTxBuffer; // Prevent overflow
+    }
+    memcpy(&txBuffer[usedTxBuffer], data, size);
+    usedTxBuffer += size;
+    return size;
+}
+
 
 size_t Wire::requestFrom(uint8_t address, size_t len, bool stopBit) {
 	uint8_t buf[256];
@@ -74,4 +83,12 @@ int Wire::read() {
 
 int Wire::available() {
 	return rxBuffer.available();
+}
+
+size_t Wire::readBytes(uint8_t* buffer, size_t length) {
+    size_t bytesRead = 0;
+    while (bytesRead < length && rxBuffer.available()) {
+        buffer[bytesRead++] = rxBuffer.read_char();
+    }
+    return bytesRead;
 }

@@ -18,6 +18,8 @@ class Wire {
     size_t requestFrom(uint8_t address, size_t len);
     int available();
     int read();
+    size_t write(const uint8_t* data, size_t size) ;
+    size_t readBytes(uint8_t* buffer, size_t length);
 
   private:
      i2c_inst_t* i2c;
