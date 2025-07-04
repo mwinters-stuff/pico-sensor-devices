@@ -11,15 +11,19 @@ Arduino Code for various Sensors modified to work in the pico-c-sdk
 * BMP085/BMP180, Temperature and Atmospheric Pressure
 * PCF8591, 8-bit A/D and D/A converter
 * PCF8575, 16 port I/O Expander
+* AT25Cx, EEPROM
+* PCA9548A, I2C Mux
 
 Feel free to issue PR's with additional devices.
 
 ## Wire
-All the sensors apart from the DHT22 are I2C sensors, these to be compatible with the arduino sensor code, 
-the wire class provides a compatible interface and is used by the above sensors.
+All the sensors apart from the DHT22 are I2C sensors, most of these are compatible with the arduino sensor code, 
+the wire class provides a compatible interface and is used by the sensors.
 
 Each sensor class holds its own instance of wire, a "begin" method has been added or modified to pass in the
 pico i2c device.
+
+The newer classes just read/write to I2C as the code was written by me and help of copilot.
 
 ## Using
 

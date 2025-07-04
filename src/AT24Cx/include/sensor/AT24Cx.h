@@ -1,7 +1,8 @@
 #ifndef AT24Cx_H
 #define AT24Cx_H  
 
-#include "sensor/Wire.h"
+#include "pico/stdlib.h"
+#include "hardware/i2c.h"
 
 #define AT24C_ADDR 0x50  // Base I2C address
 
